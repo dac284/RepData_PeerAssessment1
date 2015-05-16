@@ -1,0 +1,74 @@
+---
+title: "PA_1"
+author: "DAC"
+date: "May 15, 2015"
+output: html_document
+---
+
+# Peer Assessment 1 Reproducible Research
+
+### Loading the data
+
+The first step I took was to load the data into R by reading the csv file and creating a data frame.
+
+```{r}
+data <- read.csv('activity.csv')
+```
+
+Next I looked at a quick summary of the data.
+
+```{r}
+summary(data)
+```
+
+### What is the mean number of steps taken per day?
+
+First we have to calculate the total number of steps taken per day. We are ignoring NAs (missing data) for now.
+
+```{r}
+completeData <- data[complete.cases(data),]
+stepsPerDayData <- aggregate(completeData$steps, by = list(completeData$date), FUN = sum)
+```
+
+Next I make a histogram with bins for step numbers and frequency as the number of days. The default bins were too large so I reduced the bin size.
+
+```{r}
+bins <- 0:10 * 2500
+hist(stepsPerDayData$x, breaks = bins, main = 'Breakdown of days by number of steps', xlab = 'Number of Steps', ylab = 'Frequency (number of days)', col = 'BLUE')
+```
+
+The mean and median total steps per day were calculated, making sure to ignore missing values.
+
+```{r}
+meanSPD <- mean(stepsPerDayData$x, na.rm=TRUE) #fix format
+medianSPD <- median(stepsPerDayData$x, na.rm=TRUE)
+```
+
+From this we can see the mean is `r meanSPD` and the median is `r medianSPD`.
+
+## What is the average daily activity patern?
+
+Here we are finding the average steps in each 5 minute interval, averaged over all the days, and plotting that to see the 'Average Daily Activity Pattern'. We also are interested in which interval has, on average, the maximum number of steps.
+
+```{r}
+averageDayData <- aggregate(completeData$steps, by = list(completeData$interval), FUN = mean)
+plot(averageDayData$x ~ averageDayData$Group.1, type = 'l', main = 'Average Daily Activity Pattern', xlab = 'Time (min)', ylab = 'Number of steps')
+timeOfMax <- averageDayData[which.max(averageDayData$x),1]
+```
+
+So, on average, the maximum number of steps are taken from minute `r timeOfMax` to `r timeOfMax + 5` during the day.
+
+### Imputing missing values
+
+Now we want to check how taking out the missing values may have affected the analysis. First we calculate the number of observations that are missing.
+
+```{r}
+numMissing <- length(which(is.na(data$steps)))
+```
+
+So there are `r numMissing` observations missing data. I will create a new data set where the missing values are replaced with the daily average value for that time interval.
+
+```{r}
+#newData
+```
+
